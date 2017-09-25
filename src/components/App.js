@@ -21,15 +21,24 @@ class App extends Component {
     this.state = {
       applePosition: apple.position,
       snakePosition: snake.position,
-      snakeDirection: 'RIGHT'
+      snakeDirection: 'RIGHT',
+      gameOver: false
     }
   }
 
   moveSnake = () => {
     setInterval(() => {
       const newPosition = snake.move(this.state.snakeDirection)
-      this.setState({ snakePosition: newPosition })
+      if(this.isValidPosition(newPosition)) {
+        this.setState({ snakePosition: newPosition })
+      } else {
+        this.setState({ gameOver: true })
+      }
     }, MOVE_RATE)
+  }
+
+  isValidPosition = (position) => {
+    return position.x <= 20 && position.y <= 20
   }
 
   componentDidMount() {
@@ -44,10 +53,17 @@ class App extends Component {
   }
 
   render() {
-    const { applePosition, snakePosition } = this.state
+    const { applePosition, snakePosition, gameOver } = this.state
+    let render = null
+    if(gameOver) {
+      render = <div>Game Over</div>
+      //render = <Board apple={applePosition} snake={snakePosition}/>
+    } else {
+      render = <Board apple={applePosition} snake={snakePosition}/>
+    }
     return (
       <div className="App">
-        <Board apple={applePosition} snake={snakePosition}/>
+      {render}
       </div>
     );
   }
