@@ -37,3 +37,15 @@ body {
   -moz-border-radius: 2px;
   border-radius: 2px;
 }
+
+.cell-apple {
+  vertical-align: top; /*clears the vertical space between rows*/
+  height: 25px;
+  width: 25px;
+  display: inline-block;
+  background-color: red;
+  margin: 1px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}

@@ -7,8 +7,11 @@ export default class Board extends React.Component {
 
   renderCells() {
     let cells = []
+    let { snake, apple } = this.props
     for(let i = 1; i <= TOTALCELLS; i++) {
-      cells.push(<Cell key={i} snake={false} />)
+      let x = i % 20
+      let y = Math.ceil(i / 20)
+      cells.push(<Cell key={i} x={x} y={y} snake={snake} apple={apple}/>)
     }
     return cells
   }
