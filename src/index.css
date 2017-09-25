@@ -3,3 +3,37 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.board {
+  padding: 5px;
+  width: 550px;
+  background-color: #25567B;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  margin: auto;
+  margin-top: 20px;
+}
+.cell {
+  vertical-align: top; /*clears the vertical space between rows*/
+  height: 25px;
+  width: 25px;
+  display: inline-block;
+  background-color: white;
+  margin: 1px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+
+.cell-snake {
+  vertical-align: top; /*clears the vertical space between rows*/
+  height: 25px;
+  width: 25px;
+  display: inline-block;
+  background-color: black;
+  margin: 1px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
