@@ -1,6 +1,6 @@
 import React from 'react'
 
-let applyClass = (x, y, snake, apple) => {
+const applyClass = (x, y, snake, apple) => {
   if(snake.x === x && snake.y === y) {
     return 'cell-snake'
   } else if(apple.x === x && apple.y === y) {

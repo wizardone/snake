@@ -16,8 +16,6 @@ export default class Snake {
     } else if (direction === 'UP') {
       this._setPosition(this.position.x, this.position.y - 1)
     }
-
-    return this.position
   }
 
   _setPosition(x, y) {

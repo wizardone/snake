@@ -28,28 +28,35 @@ class App extends Component {
 
   moveSnake = () => {
     setInterval(() => {
-      const newPosition = snake.move(this.state.snakeDirection)
-      if(this.isValidPosition(newPosition)) {
-        this.setState({ snakePosition: newPosition })
+      snake.move(this.state.snakeDirection)
+      if(this.isValidPosition(snake.position)) {
+        this.setState({ snakePosition: snake.position })
+        this.snakeEatApple(this.state.applePosition, snake.position)
       } else {
         this.setState({ gameOver: true })
       }
     }, MOVE_RATE)
   }
 
+  keyUp = (e) => {
+    const newDirection = KEY_CODES[e.keyCode]
+    this.setState({ snakeDirection: newDirection })
+  }
+
   isValidPosition = (position) => {
-    return position.x <= 20 && position.y <= 20
+    return (position.x <= 20 && position.x >= 1) && (position.y <= 20 && position.y >= 1)
+  }
+
+  snakeEatApple = (applePosition, snakePosition) => {
+    if(applePosition.x === snakePosition.x && applePosition.y === snakePosition.y) {
+      apple.rePosition()
+      this.setState({ applePosition: apple.position })
+    }
   }
 
   componentDidMount() {
     this.moveSnake(snake)
     document.addEventListener('keyup', this.keyUp)
-  }
-
-  keyUp = (e) => {
-    const keyCode = e.keyCode
-    const newDirection = KEY_CODES[keyCode]
-    this.setState({ snakeDirection: newDirection })
   }
 
   render() {
@@ -63,7 +70,7 @@ class App extends Component {
     }
     return (
       <div className="App">
-      {render}
+        {render}
       </div>
     );
   }
