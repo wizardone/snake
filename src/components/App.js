@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Board from './board.js'
-import Apple from './apple.js'
-import Snake from './snake.js'
+import { newCoordinates, changePosition } from '../helpers.js'
 
 const MOVE_RATE = 300
 const KEY_CODES = {
@@ -12,37 +11,33 @@ const KEY_CODES = {
   40: 'DOWN',
 }
 
-let apple = new Apple()
-let snake = new Snake()
-
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
       apple: {
-        coordinates: apple.position
+        coordinates: newCoordinates()
       },
       snake: {
-        coordinates: snake.coordinates
+        coordinates: [newCoordinates()]
       },
       snakeDirection: 'RIGHT',
       gameOver: false
     }
   }
 
-  updateSnakePosition = (snake) => {
+  updateSnakePosition = (coordinates) => {
     this.setState({
       snake: {
-        coordinates: [snake.headCoordinates, ...snake.tailCoordinates]
+        coordinates: [coordinates]
       }
     })
   }
 
-  updateApplePosition = (apple) => {
-    apple.rePosition()
+  updateApplePosition = (coordinates) => {
     this.setState({
       apple: {
-        coordinates: apple.position
+        coordinates: coordinates
       }
     })
   }
@@ -53,7 +48,13 @@ class App extends Component {
   }
 
   moveSnake = () => {
-    const isEating = this.isSnakeEating(this.state.apple.coordinates, snake.coordinates)
+    const snakeHead = this.state.snake.coordinates[0]
+    const newCoordinates = changePosition[this.state.snakeDirection](snakeHead.x, snakeHead.y)
+    if(this.isValidBoardPosition(newCoordinates)) {
+      this.updateSnakePosition(newCoordinates)
+    } else {
+      this.gameOver()
+    }
   }
 
   keyUp = (e) => {
@@ -61,8 +62,9 @@ class App extends Component {
     this.setState({ snakeDirection: newDirection })
   }
 
-  isValidBoardPosition = (position) => {
-    return (position.x <= 20 && position.x >= 1) && (position.y <= 20 && position.y >= 1)
+  isValidBoardPosition = (snakeCoordinates) => {
+    const snakeHead = snakeCoordinates[0]
+    return (snakeCoordinates.x <= 20 && snakeCoordinates.x >= 1) && (snakeCoordinates.y <= 20 && snakeCoordinates.y >= 1)
   }
 
   isSnakeEating = (applePosition, snakeCoordinates) => {
@@ -76,12 +78,12 @@ class App extends Component {
   }
 
   render() {
-    const { apple, snake, gameOver } = this.state
+    const { gameOver } = this.state
     let render = null
     if(gameOver) {
       render = <div>Game Over</div>
     } else {
-      render = <Board appleCoordinates={apple.coordinates} snakeCoordinates={snake.coordinates}/>
+      render = <Board appleCoordinates={this.state.apple.coordinates} snakeCoordinates={this.state.snake.coordinates}/>
     }
     return (
       <div className="App">
