@@ -26,15 +26,25 @@ class App extends Component {
     }
   }
 
-  updateSnakePosition = (coordinates) => {
+  updateSnakePosition = (newHeadCoordinates, isEating) => {
+    const prevCoordinates = this.state.snake.coordinates
+    let snakeHead = newHeadCoordinates
+    let snakeTail = null
+    if(isEating) {
+      snakeTail = prevCoordinates
+      this.updateApplePosition()
+    } else {
+      snakeTail = prevCoordinates.slice(0, prevCoordinates.length - 1)
+    }
     this.setState({
       snake: {
-        coordinates: [coordinates]
+        coordinates: [snakeHead, ...snakeTail]
       }
     })
   }
 
-  updateApplePosition = (coordinates) => {
+  updateApplePosition = () => {
+    const coordinates = newCoordinates()
     this.setState({
       apple: {
         coordinates: coordinates
@@ -49,9 +59,10 @@ class App extends Component {
 
   moveSnake = () => {
     const snakeHead = this.state.snake.coordinates[0]
-    const newCoordinates = changePosition[this.state.snakeDirection](snakeHead.x, snakeHead.y)
-    if(this.isValidBoardPosition(newCoordinates)) {
-      this.updateSnakePosition(newCoordinates)
+    const newHeadCoordinates = changePosition[this.state.snakeDirection](snakeHead.x, snakeHead.y)
+    if(this.isValidBoardPosition(newHeadCoordinates)) {
+      const isEating = this.isSnakeEating(this.state.apple.coordinates, newHeadCoordinates)
+      this.updateSnakePosition(newHeadCoordinates, isEating)
     } else {
       this.gameOver()
     }
@@ -63,13 +74,12 @@ class App extends Component {
   }
 
   isValidBoardPosition = (snakeCoordinates) => {
-    const snakeHead = snakeCoordinates[0]
     return (snakeCoordinates.x <= 20 && snakeCoordinates.x >= 1) && (snakeCoordinates.y <= 20 && snakeCoordinates.y >= 1)
   }
 
   isSnakeEating = (applePosition, snakeCoordinates) => {
-    const snakeHead = snakeCoordinates.slice(0, 1)[0]
-    return applePosition.x === snakeHead.x && applePosition.y === snakeHead.y
+    //const snakeHead = snakeCoordinates.slice(0, 1)[0]
+    return applePosition.x === snakeCoordinates.x && applePosition.y === snakeCoordinates.y
   }
 
   componentDidMount() {
