@@ -1,18 +1,24 @@
 import React from 'react'
 
-const applyClass = (x, y, snake, apple) => {
-  if(snake.x === x && snake.y === y) {
+const isSnake = (x, y, snakeCoordinates) => {
+  return snakeCoordinates.filter((coordinates) => {
+    return coordinates.x === x && coordinates.y === y
+  }).length
+}
+
+const applyClass = (x, y, snakeCoordinates, appleCoordinates) => {
+  if(isSnake(x, y, snakeCoordinates)) {
     return 'cell-snake'
-  } else if(apple.x === x && apple.y === y) {
+  } else if(appleCoordinates.x === x && appleCoordinates.y === y) {
     return 'cell-apple'
   } else {
     return 'cell'
   }
 }
 
-const Cell = ({ x, y, snake, apple }) => {
+const Cell = ({ x, y, snakeCoordinates, appleCoordinates }) => {
   return (
-    <div className={applyClass(x, y, snake, apple)}></div>
+    <div className={applyClass(x, y, snakeCoordinates, appleCoordinates)}></div>
   )
 }
 export default Cell

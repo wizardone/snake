@@ -4,7 +4,7 @@ import Board from './board.js'
 import Apple from './apple.js'
 import Snake from './snake.js'
 
-const MOVE_RATE = 500
+const MOVE_RATE = 300
 const KEY_CODES = {
   38: 'UP',
   39: 'RIGHT',
@@ -19,23 +19,41 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      applePosition: apple.position,
-      snakePosition: snake.position,
+      apple: {
+        coordinates: apple.position
+      },
+      snake: {
+        coordinates: snake.coordinates
+      },
       snakeDirection: 'RIGHT',
       gameOver: false
     }
   }
 
-  moveSnake = () => {
-    setInterval(() => {
-      snake.move(this.state.snakeDirection)
-      if(this.isValidPosition(snake.position)) {
-        this.setState({ snakePosition: snake.position })
-        this.snakeEatApple(this.state.applePosition, snake.position)
-      } else {
-        this.setState({ gameOver: true })
+  updateSnakePosition = (snake) => {
+    this.setState({
+      snake: {
+        coordinates: [snake.headCoordinates, ...snake.tailCoordinates]
       }
-    }, MOVE_RATE)
+    })
+  }
+
+  updateApplePosition = (apple) => {
+    apple.rePosition()
+    this.setState({
+      apple: {
+        coordinates: apple.position
+      }
+    })
+  }
+
+  gameOver = () => {
+    this.setState({ gameOver: true })
+    clearInterval(this.interval)
+  }
+
+  moveSnake = () => {
+    const isEating = this.isSnakeEating(this.state.apple.coordinates, snake.coordinates)
   }
 
   keyUp = (e) => {
@@ -43,34 +61,31 @@ class App extends Component {
     this.setState({ snakeDirection: newDirection })
   }
 
-  isValidPosition = (position) => {
+  isValidBoardPosition = (position) => {
     return (position.x <= 20 && position.x >= 1) && (position.y <= 20 && position.y >= 1)
   }
 
-  snakeEatApple = (applePosition, snakePosition) => {
-    if(applePosition.x === snakePosition.x && applePosition.y === snakePosition.y) {
-      apple.rePosition()
-      this.setState({ applePosition: apple.position })
-    }
+  isSnakeEating = (applePosition, snakeCoordinates) => {
+    const snakeHead = snakeCoordinates.slice(0, 1)[0]
+    return applePosition.x === snakeHead.x && applePosition.y === snakeHead.y
   }
 
   componentDidMount() {
-    this.moveSnake(snake)
+    this.interval = setInterval(this.moveSnake, MOVE_RATE)
     document.addEventListener('keyup', this.keyUp)
   }
 
   render() {
-    const { applePosition, snakePosition, gameOver } = this.state
+    const { apple, snake, gameOver } = this.state
     let render = null
     if(gameOver) {
       render = <div>Game Over</div>
-      //render = <Board apple={applePosition} snake={snakePosition}/>
     } else {
-      render = <Board apple={applePosition} snake={snakePosition}/>
+      render = <Board appleCoordinates={apple.coordinates} snakeCoordinates={snake.coordinates}/>
     }
     return (
       <div className="App">
-        {render}
+      {render}
       </div>
     );
   }

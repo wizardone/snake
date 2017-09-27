@@ -1,24 +1,47 @@
 import newPosition from '../helpers.js'
 
-
 export default class Snake {
   constructor() {
-    this.position = newPosition()
+    this.coordinates = [newPosition()]
+    //this.tailCoordinates = []
+    //this.headCoordinates = newPosition()
   }
 
-  move(direction) {
+  move(direction, isEating) {
+    const oldCoordinates = { x: this.headCoordinates.x, y: this.headCoordinates.y }
+    const currentHeadCoordinates = this.coordinates.slice(0, 1)
     if(direction === 'RIGHT') {
-      this._setPosition(this.position.x + 1, this.position.y)
+      this._setHeadPosition(currentHeadCoordinates.x + 1, currentHeadCoordinates.y)
     } else if (direction === 'LEFT') {
-      this._setPosition(this.position.x - 1, this.position.y)
+      this._setHeadPosition(currentHeadCoordinates.x - 1, currentHeadCoordinates.y)
     } else if (direction === 'DOWN') {
-      this._setPosition(this.position.x, this.position.y + 1)
+      this._setHeadPosition(currentHeadCoordinates.x, currentHeadCoordinates.y + 1)
     } else if (direction === 'UP') {
-      this._setPosition(this.position.x, this.position.y - 1)
+      this._setHeadPosition(currentHeadCoordinates.x, currentHeadCoordinates.y - 1)
+    }
+    if(isEating) {
+      this.addTail(oldCoordinates)
+    }
+    this.adjustTail(oldCoordinates)
+  }
+
+  adjustTail(headCoordinates) {
+    if(this.tailCoordinates.length > 1) {
     }
   }
 
-  _setPosition(x, y) {
-    this.position = { x: x, y: y }
+  addTail(coordinates) {
+    this.coordinates.push({ x: coordinates.x, y: coordinates.y })
+  }
+
+  _setHeadPosition(x, y) {
+    this.headCoordinates = { x: x, y: y }
+  }
+
+  _setTailPosition(x, y) {
+    if(this.hasEaten) {
+      this.tailCoordinates.push({ x: x, y: y })
+      this.length += 1
+    }
   }
 }
