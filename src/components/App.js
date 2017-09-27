@@ -3,7 +3,7 @@ import '../App.css';
 import Board from './board.js'
 import { newCoordinates, changePosition } from '../helpers.js'
 
-const MOVE_RATE = 300
+const MOVE_RATE = 200
 const KEY_CODES = {
   38: 'UP',
   39: 'RIGHT',
@@ -34,8 +34,10 @@ class App extends Component {
       snakeTail = prevCoordinates
       this.updateApplePosition()
     } else {
+      console.log(prevCoordinates.slice(0, prevCoordinates.length - 1))
       snakeTail = prevCoordinates.slice(0, prevCoordinates.length - 1)
     }
+
     this.setState({
       snake: {
         coordinates: [snakeHead, ...snakeTail]
