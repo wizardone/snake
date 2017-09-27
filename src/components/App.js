@@ -29,14 +29,9 @@ class App extends Component {
   updateSnakePosition = (newHeadCoordinates, isEating) => {
     const prevCoordinates = this.state.snake.coordinates
     let snakeHead = newHeadCoordinates
-    let snakeTail = null
-    if(isEating) {
-      snakeTail = prevCoordinates
-      this.updateApplePosition()
-    } else {
-      console.log(prevCoordinates.slice(0, prevCoordinates.length - 1))
-      snakeTail = prevCoordinates.slice(0, prevCoordinates.length - 1)
-    }
+    let snakeTail = isEating ? prevCoordinates :
+                               prevCoordinates.slice(0, prevCoordinates.length - 1)
+    if(isEating) this.updateApplePosition()
 
     this.setState({
       snake: {
@@ -62,7 +57,8 @@ class App extends Component {
   moveSnake = () => {
     const snakeHead = this.state.snake.coordinates[0]
     const newHeadCoordinates = changePosition[this.state.snakeDirection](snakeHead.x, snakeHead.y)
-    if(this.isValidBoardPosition(newHeadCoordinates)) {
+
+    if(this.isValidBoardPosition(newHeadCoordinates) && this.isNotEatingItself(newHeadCoordinates)) {
       const isEating = this.isSnakeEating(this.state.apple.coordinates, newHeadCoordinates)
       this.updateSnakePosition(newHeadCoordinates, isEating)
     } else {
@@ -75,12 +71,17 @@ class App extends Component {
     this.setState({ snakeDirection: newDirection })
   }
 
-  isValidBoardPosition = (snakeCoordinates) => {
-    return (snakeCoordinates.x <= 20 && snakeCoordinates.x >= 1) && (snakeCoordinates.y <= 20 && snakeCoordinates.y >= 1)
+  isValidBoardPosition = (newHeadCoordinates) => {
+    return (newHeadCoordinates.x <= 20 && newHeadCoordinates.x >= 1) && (newHeadCoordinates.y <= 20 && newHeadCoordinates.y >= 1)
+  }
+
+  isNotEatingItself = (newHeadCoordinates) => {
+    return this.state.snake.coordinates.filter((coordinate) => {
+      return coordinate.x === newHeadCoordinates.x && coordinate.y === newHeadCoordinates.y
+    }).length === 0
   }
 
   isSnakeEating = (applePosition, snakeCoordinates) => {
-    //const snakeHead = snakeCoordinates.slice(0, 1)[0]
     return applePosition.x === snakeCoordinates.x && applePosition.y === snakeCoordinates.y
   }
 
