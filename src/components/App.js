@@ -95,6 +95,7 @@ class App extends Component {
     let render = null
     if(gameOver) {
       render = <div>Game Over</div>
+      render = <Board appleCoordinates={this.state.apple.coordinates} snakeCoordinates={this.state.snake.coordinates}/>
     } else {
       render = <Board appleCoordinates={this.state.apple.coordinates} snakeCoordinates={this.state.snake.coordinates}/>
     }
