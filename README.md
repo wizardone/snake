@@ -1,4 +1,5 @@
 ### Snake
+You can play the game [here](https://react-snak.herokuapp.com/)
 
 To run:
 1. Clone the repo
