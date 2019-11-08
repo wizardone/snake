@@ -1,0 +1,10 @@
+.board {
+  padding: 5px;
+  width: 550px;
+  background-color: #25567B;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  margin: auto;
+  margin-top: 20px;
+}
