@@ -1,10 +1,14 @@
 import React from 'react';
 import './Cell.css';
 
-const Cell: React.FC<{key: number, x: number, y: number}> = ({key, x, y}) => {
+export interface CellProps {
+	key: number,
+	x: number,
+	y: number
+}
+
+export const Cell: React.FC<CellProps> = ({key, x, y}) => {
 	return (
 		<div className={'cell'}></div>
 	)
 }
-
-export default Cell;
