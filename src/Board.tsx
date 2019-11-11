@@ -1,8 +1,14 @@
 import React from 'react';
 import './Board.css';
 import { Cell, CellProps } from './Cell';
+import { coordinates } from './App';
 
-const Board: React.FC = () => {
+interface BoardProps {
+	appleCoordinates: coordinates,
+	snakeCoordinates: coordinates,
+}
+
+const Board: React.FC<BoardProps> = ({appleCoordinates, snakeCoordinates}) => {
 	const TOTAL_CELLS: number = 400;
 
 	const renderCells = () => {
