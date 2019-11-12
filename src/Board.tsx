@@ -17,7 +17,13 @@ const Board: React.FC<BoardProps> = ({appleCoordinates, snakeCoordinates}) => {
     	let x: number = i % 20
     	if(x === 0) x = 20
     	let y: number = Math.ceil(i / 20)
-    	cells.push(<Cell key={i} x={x} y={y} />)
+    	if(appleCoordinates.x === x && appleCoordinates.y === y) {
+				cells.push(<Cell key={i} x={x} y={y} apple={true} />)
+    	} else if(snakeCoordinates.x === x && snakeCoordinates.y === y) {
+				cells.push(<Cell key={i} x={x} y={y} snake={true}/>)
+    	} else {
+				cells.push(<Cell key={i} x={x} y={y} />)
+    	}
     }
   	return cells	
 	}
