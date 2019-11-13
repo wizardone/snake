@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
 import Board from './Board';
 
-export interface coordinates {
+export type coordinates = {
 	x: number;
 	y: number;
 }

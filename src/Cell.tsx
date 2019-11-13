@@ -1,7 +1,7 @@
 import React from 'react';
 import './Cell.css';
 
-export interface CellProps {
+export type CellProps = {
 	key: number,
 	x: number,
 	y: number,
