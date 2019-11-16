@@ -1,91 +1,79 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import './Board.css';
 import { Cell, CellProps } from './Cell';
-import { coordinates } from './App';
+
+type coordinates = {
+	x: number;
+	y: number;
+}
 
 type BoardProps = {
-	appleCoordinates: coordinates,
-	snakeCoordinates: coordinates,
+	appleCoordinates: coordinates
+	snakeCoordinates: coordinates
+	moveSpeed: number
 }
 
-function useInterval(callback: any, delay: number) {
-  const savedCallback: any = useRef();
-
-  // Remember the latest function.
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  // Set up the interval.
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-    if (delay !== null) {
-      let id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
+type BoardState = {
+	snake: coordinates
+	direction: string
 }
 
-const Board: React.FC<BoardProps> = ({appleCoordinates, snakeCoordinates}) => {
-	const [coordinates, toggleCoordinates] = useState({
-		apple: appleCoordinates,
-		snake: snakeCoordinates,
+const TOTAL_CELLS: number = 400
+const KEY_DIRECTIONS: any = {
+	37: 'LEFT',
+	38: 'DOWN',
+	39: 'RIGHT',
+	40: 'UP'
+}
+
+export default class Board extends React.Component<BoardProps, BoardState> {
+	state: BoardState = {
+		snake: this.props.snakeCoordinates,
 		direction: "LEFT"
-	})
+	}
 
-	useInterval(() => {
-			moveSnake()
-	}, 500)
+	componentDidMount() {
+		setInterval(() => {
+			this.moveSnake(this.state.snake)
+		}, this.props.moveSpeed)
 
-	useEffect(() => {
 		document.addEventListener('keyup', (event: KeyboardEvent) => {
 			if(KEY_DIRECTIONS[event.keyCode] !== undefined) {
-				changeSnakeDirection(KEY_DIRECTIONS[event.keyCode])
+				this.changeSnakeDirection(KEY_DIRECTIONS[event.keyCode])
 			}
 		})
-	})
-
-	const TOTAL_CELLS: number = 400
-	const KEY_DIRECTIONS: any = {
-		37: 'LEFT',
-		38: 'DOWN',
-		39: 'RIGHT',
-		40: 'UP'
 	}
 
-	const changeSnakeDirection = (newDirection: string): void => {
-		toggleCoordinates({...coordinates, ...{direction: newDirection}})
+	changeSnakeDirection = (newDirection: string): void => {
+		this.setState({...this.state, ...{direction: newDirection}})
 	}
 
-	const moveSnake = (): void => {
-		let snakeX: number = coordinates.snake.x
-		let snakeY:number = coordinates.snake.y
+	moveSnake = (snakeCoordinates: coordinates): void => {
+		let snakeX: number = snakeCoordinates.x
+		let snakeY:number = snakeCoordinates.y
 		let newCoordinates: coordinates = {x: 0, y: 0}
 
-		if(coordinates.direction === 'LEFT') {
+		if(this.state.direction === 'LEFT') {
 			newCoordinates = { x: snakeX - 1, y: snakeY }
-		} else if(coordinates.direction === 'RIGHT') {
+		} else if(this.state.direction === 'RIGHT') {
 			newCoordinates = { x: snakeX + 1, y: snakeY }
-		} else if(coordinates.direction === 'UP') {
+		} else if(this.state.direction === 'UP') {
 			newCoordinates = { x: snakeX, y: snakeY + 1}
-		} else if(coordinates.direction === 'DOWN') {
+		} else if(this.state.direction === 'DOWN') {
 			newCoordinates = { x: snakeX, y: snakeY - 1}
 		}
-
-		toggleCoordinates({...coordinates, ...{snake: newCoordinates}})
+	  this.setState({...this.state, ...{snake: newCoordinates}})
 	}
 
-	const renderCells = () => {
+	renderCells = () => {
 		let cells: Array<React.FunctionComponentElement<CellProps>> = []
     for(let i: number = 1; i <= TOTAL_CELLS; i++) {
     	let x: number = i % 20
     	if(x === 0) x = 20
     	let y: number = Math.ceil(i / 20)
-    	if(coordinates.apple.x === x && coordinates.apple.y === y) {
+    	if(this.props.appleCoordinates.x === x && this.props.appleCoordinates.y === y) {
 				cells.push(<Cell key={i} x={x} y={y} apple={true} />)
-    	} else if(coordinates.snake.x === x && coordinates.snake.y === y) {
+    	} else if(this.state.snake.x === x && this.state.snake.y === y) {
 				cells.push(<Cell key={i} x={x} y={y} snake={true}/>)
     	} else {
 				cells.push(<Cell key={i} x={x} y={y} />)
@@ -94,11 +82,11 @@ const Board: React.FC<BoardProps> = ({appleCoordinates, snakeCoordinates}) => {
   	return cells	
 	}
 
-	return (
-		<div className="board">
-			{renderCells()}
-    </div>
-	)
+	render() {
+		return (
+			<div className="board">
+				{this.renderCells()}
+    	</div>
+		)
+	}
 }
-
-export default Board;

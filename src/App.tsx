@@ -7,12 +7,13 @@ export type coordinates = {
 	y: number;
 }
 
-const App: React.FC = () => {
+export const App: React.FC = () => {
 
-	const MAX = 20;
-	const MIN = 1;
+	const MAX = 20
+	const MIN = 1
+	const MOVE_SPEED = 200
 
-	let initialCoordinates = {
+	let initialCoordinates: coordinates = {
 		x: 0,
 		y: 0
 	}
@@ -34,9 +35,7 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-			<Board appleCoordinates={newCoordinates()} snakeCoordinates={newCoordinates()}/>
+			<Board appleCoordinates={newCoordinates()} snakeCoordinates={newCoordinates()} moveSpeed={MOVE_SPEED}/>
     </div>
   );
 }
-
-export default App;
