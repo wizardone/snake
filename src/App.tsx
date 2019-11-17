@@ -6,12 +6,11 @@ export type coordinates = {
 	x: number;
 	y: number;
 }
+export const MAX = 20
+export const MIN = 1
+export const MOVE_SPEED = 500
 
 export const App: React.FC = () => {
-
-	const MAX = 20
-	const MIN = 1
-	const MOVE_SPEED = 200
 
 	let initialCoordinates: coordinates = {
 		x: 0,

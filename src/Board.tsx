@@ -1,5 +1,6 @@
 import React from 'react';
 import './Board.css';
+import { MAX, MIN } from './App';
 import { Cell, CellProps } from './Cell';
 
 type coordinates = {
@@ -14,8 +15,10 @@ type BoardProps = {
 }
 
 type BoardState = {
+	apple: coordinates
 	snake: coordinates
 	direction: string
+	gameOver: boolean
 }
 
 const TOTAL_CELLS: number = 400
@@ -28,8 +31,10 @@ const KEY_DIRECTIONS: any = {
 
 export default class Board extends React.Component<BoardProps, BoardState> {
 	state: BoardState = {
+		apple: this.props.appleCoordinates,
 		snake: this.props.snakeCoordinates,
-		direction: "LEFT"
+		direction: "LEFT",
+		gameOver: false
 	}
 
 	componentDidMount() {
@@ -62,7 +67,34 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 		} else if(this.state.direction === 'DOWN') {
 			newCoordinates = { x: snakeX, y: snakeY - 1}
 		}
+
+		if(this.checkHitWall(newCoordinates))
+			this.setState({...this.state, ...{gameOver: true}})
+		if(this.checkHitApple(newCoordinates))
+			this.setState({...this.state, ...{apple: this.generateAppleCoordinates()}})
+
 	  this.setState({...this.state, ...{snake: newCoordinates}})
+	}
+
+	checkHitWall = (newCoordinates: coordinates): boolean => {
+		if(newCoordinates.x > MAX || newCoordinates.x < MIN || newCoordinates.y > MAX || newCoordinates.y < MIN) {
+			return true
+		}
+		return false
+	}
+
+	checkHitApple = (newCoordinates: coordinates): boolean => {
+		if(newCoordinates.x === this.state.apple.x && newCoordinates.y === this.state.apple.y) {
+			return true
+		}
+		return false
+	}
+
+	generateAppleCoordinates = (): coordinates => {
+		return {
+			x: Math.floor(Math.random() * (MAX - MIN) + MIN),
+			y: Math.floor(Math.random() * (MAX - MIN) + MIN)
+		}
 	}
 
 	renderCells = () => {
@@ -71,7 +103,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     	let x: number = i % 20
     	if(x === 0) x = 20
     	let y: number = Math.ceil(i / 20)
-    	if(this.props.appleCoordinates.x === x && this.props.appleCoordinates.y === y) {
+    	if(this.state.apple.x === x && this.state.apple.y === y) {
 				cells.push(<Cell key={i} x={x} y={y} apple={true} />)
     	} else if(this.state.snake.x === x && this.state.snake.y === y) {
 				cells.push(<Cell key={i} x={x} y={y} snake={true}/>)
@@ -82,10 +114,14 @@ export default class Board extends React.Component<BoardProps, BoardState> {
   	return cells	
 	}
 
+	renderGameOver = () => {
+		return <div>Game Over</div>
+	}
+
 	render() {
 		return (
 			<div className="board">
-				{this.renderCells()}
+				{this.state.gameOver ? this.renderGameOver() : this.renderCells()}
     	</div>
 		)
 	}
