@@ -16,7 +16,7 @@ type BoardProps = {
 
 type BoardState = {
 	apple: coordinates
-	snake: coordinates
+	snake: Array<coordinates>
 	direction: string
 	gameOver: boolean
 }
@@ -32,7 +32,7 @@ const KEY_DIRECTIONS: any = {
 export default class Board extends React.Component<BoardProps, BoardState> {
 	state: BoardState = {
 		apple: this.props.appleCoordinates,
-		snake: this.props.snakeCoordinates,
+		snake: [this.props.snakeCoordinates],
 		direction: "LEFT",
 		gameOver: false
 	}
@@ -53,27 +53,31 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 		this.setState({...this.state, ...{direction: newDirection}})
 	}
 
-	moveSnake = (snakeCoordinates: coordinates): void => {
-		let snakeX: number = snakeCoordinates.x
-		let snakeY:number = snakeCoordinates.y
-		let newCoordinates: coordinates = {x: 0, y: 0}
+	moveSnake = (snakeCoordinates: Array<coordinates>): void => {
+		let [snakeHead, ...snakeTail] = snakeCoordinates
+		let newCoordinates: Array<coordinates> = []
 
 		if(this.state.direction === 'LEFT') {
-			newCoordinates = { x: snakeX - 1, y: snakeY }
+			snakeHead = { x: snakeHead.x - 1, y: snakeHead.y }
 		} else if(this.state.direction === 'RIGHT') {
-			newCoordinates = { x: snakeX + 1, y: snakeY }
+			snakeHead = { x: snakeHead.x + 1, y: snakeHead.y }
 		} else if(this.state.direction === 'UP') {
-			newCoordinates = { x: snakeX, y: snakeY + 1}
+			snakeHead = { x: snakeHead.x, y: snakeHead.y + 1}
 		} else if(this.state.direction === 'DOWN') {
-			newCoordinates = { x: snakeX, y: snakeY - 1}
+			snakeHead = { x: snakeHead.x, y: snakeHead.y - 1}
 		}
 
-		if(this.checkHitWall(newCoordinates))
+		if(this.checkHitWall(snakeHead)) {
 			this.setState({...this.state, ...{gameOver: true}})
-		if(this.checkHitApple(newCoordinates))
-			this.setState({...this.state, ...{apple: this.generateAppleCoordinates()}})
-
-	  this.setState({...this.state, ...{snake: newCoordinates}})
+		} else if(this.checkHitApple(snakeHead)) {
+			//Consume the apple and grow
+			this.setState({
+				...this.state,
+				...{snake: [this.state.apple, ...[snakeHead, ...snakeTail]], apple: this.generateAppleCoordinates()}
+			})
+		} else {
+	  	this.setState({...this.state, ...{snake: [snakeHead, ...snakeTail]}})
+	  }
 	}
 
 	checkHitWall = (newCoordinates: coordinates): boolean => {
@@ -91,9 +95,15 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 	}
 
 	generateAppleCoordinates = (): coordinates => {
-		return {
-			x: Math.floor(Math.random() * (MAX - MIN) + MIN),
-			y: Math.floor(Math.random() * (MAX - MIN) + MIN)
+		let tempX = Math.floor(Math.random() * (MAX - MIN) + MIN)
+		let tempY = Math.floor(Math.random() * (MAX - MIN) + MIN)
+		if(tempX !== this.state.snake[0].x && tempY !== this.state.snake[0].y) {
+			return {
+				x: tempX,
+				y: tempY
+			}
+		} else {
+			return this.generateAppleCoordinates()
 		}
 	}
 
@@ -105,7 +115,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     	let y: number = Math.ceil(i / 20)
     	if(this.state.apple.x === x && this.state.apple.y === y) {
 				cells.push(<Cell key={i} x={x} y={y} apple={true} />)
-    	} else if(this.state.snake.x === x && this.state.snake.y === y) {
+    	} else if(this.state.snake[0].x === x && this.state.snake[0].y === y) {
 				cells.push(<Cell key={i} x={x} y={y} snake={true}/>)
     	} else {
 				cells.push(<Cell key={i} x={x} y={y} />)
