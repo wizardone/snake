@@ -54,40 +54,46 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 	}
 
 	moveSnake = (snakeCoordinates: Array<coordinates>): void => {
-		let [snakeHead, ...snakeTail] = snakeCoordinates
-		let newCoordinates: Array<coordinates> = []
+		let snakeHead: coordinates = snakeCoordinates[0]
+		let newSnakeHead: coordinates = {x: 0, y: 0}
 
-		if(this.state.direction === 'LEFT') {
-			snakeHead = { x: snakeHead.x - 1, y: snakeHead.y }
-		} else if(this.state.direction === 'RIGHT') {
-			snakeHead = { x: snakeHead.x + 1, y: snakeHead.y }
-		} else if(this.state.direction === 'UP') {
-			snakeHead = { x: snakeHead.x, y: snakeHead.y + 1}
-		} else if(this.state.direction === 'DOWN') {
-			snakeHead = { x: snakeHead.x, y: snakeHead.y - 1}
-		}
-
-		if(this.checkHitWall(snakeHead)) {
+		
+		newSnakeHead = this.calculateNewSnakeHead(snakeHead)
+		
+		if(this.snakeHitWall(newSnakeHead)) {
 			this.setState({...this.state, ...{gameOver: true}})
-		} else if(this.checkHitApple(snakeHead)) {
-			//Consume the apple and grow
+		} else if(this.snakeEatsApple(newSnakeHead)) {
 			this.setState({
 				...this.state,
-				...{snake: [this.state.apple, ...[snakeHead, ...snakeTail]], apple: this.generateAppleCoordinates()}
+				...{snake: [newSnakeHead, ...snakeCoordinates], apple: this.generateAppleCoordinates()}
 			})
 		} else {
-	  	this.setState({...this.state, ...{snake: [snakeHead, ...snakeTail]}})
+	  	this.setState({...this.state, ...{snake: [newSnakeHead, ...snakeCoordinates.slice(0, snakeCoordinates.length-1)]}})
 	  }
 	}
 
-	checkHitWall = (newCoordinates: coordinates): boolean => {
+	calculateNewSnakeHead = (oldSnakeHead: coordinates): coordinates => {
+		if(this.state.direction === 'LEFT') {
+			return { x: oldSnakeHead.x - 1, y: oldSnakeHead.y }
+		} else if(this.state.direction === 'RIGHT') {
+			return { x: oldSnakeHead.x + 1, y: oldSnakeHead.y }
+		} else if(this.state.direction === 'UP') {
+			return { x: oldSnakeHead.x, y: oldSnakeHead.y + 1}
+		} else if(this.state.direction === 'DOWN') {
+			return { x: oldSnakeHead.x, y: oldSnakeHead.y - 1}
+		} else {
+			return { x: 0, y: 0}
+		}
+	}
+
+	snakeHitWall = (newCoordinates: coordinates): boolean => {
 		if(newCoordinates.x > MAX || newCoordinates.x < MIN || newCoordinates.y > MAX || newCoordinates.y < MIN) {
 			return true
 		}
 		return false
 	}
 
-	checkHitApple = (newCoordinates: coordinates): boolean => {
+	snakeEatsApple = (newCoordinates: coordinates): boolean => {
 		if(newCoordinates.x === this.state.apple.x && newCoordinates.y === this.state.apple.y) {
 			return true
 		}
@@ -115,7 +121,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     	let y: number = Math.ceil(i / 20)
     	if(this.state.apple.x === x && this.state.apple.y === y) {
 				cells.push(<Cell key={i} x={x} y={y} apple={true} />)
-    	} else if(this.state.snake[0].x === x && this.state.snake[0].y === y) {
+    	} else if(this.state.snake.filter((coordinates) => coordinates.x === x && coordinates.y === y).length) {
 				cells.push(<Cell key={i} x={x} y={y} snake={true}/>)
     	} else {
 				cells.push(<Cell key={i} x={x} y={y} />)
