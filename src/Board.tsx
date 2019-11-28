@@ -19,6 +19,7 @@ type BoardState = {
 	snake: Array<coordinates>
 	direction: string
 	gameOver: boolean
+	score: number
 }
 
 const TOTAL_CELLS: number = 400
@@ -34,7 +35,8 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 		apple: this.props.appleCoordinates,
 		snake: [this.props.snakeCoordinates],
 		direction: "LEFT",
-		gameOver: false
+		gameOver: false,
+		score: 0
 	}
 
 	componentDidMount() {
@@ -65,8 +67,10 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 		} else if(this.snakeEatsApple(newSnakeHead)) {
 			this.setState({
 				...this.state,
-				...{snake: [newSnakeHead, ...snakeCoordinates], apple: this.generateAppleCoordinates()}
+				...{snake: [newSnakeHead, ...snakeCoordinates], apple: this.generateAppleCoordinates(), score: this.state.score += 1}
 			})
+		} else if(this.snakeEatsSelf(newSnakeHead, snakeCoordinates)) {
+			this.setState({...this.state, ...{gameOver: true}})
 		} else {
 	  	this.setState({...this.state, ...{snake: [newSnakeHead, ...snakeCoordinates.slice(0, snakeCoordinates.length-1)]}})
 	  }
@@ -91,6 +95,12 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 			return true
 		}
 		return false
+	}
+
+	snakeEatsSelf = (newSnakeHead: coordinates, oldCoordinates: coordinates[]): boolean => {
+		return oldCoordinates.filter((coordinates) => {
+			return coordinates.x === newSnakeHead.x && coordinates.y === newSnakeHead.y
+		}).length > 1
 	}
 
 	snakeEatsApple = (newCoordinates: coordinates): boolean => {
