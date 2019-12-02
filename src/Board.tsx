@@ -70,6 +70,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 				...{snake: [newSnakeHead, ...snakeCoordinates], apple: this.generateAppleCoordinates(), score: this.state.score += 1}
 			})
 		} else if(this.snakeEatsSelf(newSnakeHead, snakeCoordinates)) {
+			console.log("YEAHHH")
 			this.setState({...this.state, ...{gameOver: true}})
 		} else {
 	  	this.setState({...this.state, ...{snake: [newSnakeHead, ...snakeCoordinates.slice(0, snakeCoordinates.length-1)]}})
@@ -100,7 +101,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 	snakeEatsSelf = (newSnakeHead: coordinates, oldCoordinates: coordinates[]): boolean => {
 		return oldCoordinates.filter((coordinates) => {
 			return coordinates.x === newSnakeHead.x && coordinates.y === newSnakeHead.y
-		}).length > 1
+		}).length > 0
 	}
 
 	snakeEatsApple = (newCoordinates: coordinates): boolean => {
@@ -141,7 +142,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
 	}
 
 	renderGameOver = () => {
-		return <div>Game Over</div>
+		return <div>Game Over<br />Your score is {this.state.score}</div>
 	}
 
 	render() {
